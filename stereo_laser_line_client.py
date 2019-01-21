@@ -12,7 +12,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 import torchfile
 from camera_aravis.srv import SetIO, SetIORequest
-from laundrometer_python.modules.capture_client import GeniCamCaptureClient
+from capture_client import GeniCamCaptureClient
 
 
 class StereoLaserLineClientException(Exception):
