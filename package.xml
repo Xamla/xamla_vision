@@ -55,6 +55,7 @@
   <exec_depend>rospy</exec_depend>
   <build_export_depend>vision_opencv</build_export_depend>
   <exec_depend>xamlamoveit_server</exec_depend>
+  <exec_depend>xamla_motion</exec_depend>
   <exec_depend>python-rospkg</exec_depend>
   <exec_depend>python3-catkin-pkg-modules</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
