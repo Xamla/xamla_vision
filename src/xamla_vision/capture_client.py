@@ -129,7 +129,7 @@ class SimulatedCaptureClient(object):
                 self.pictures[s].append(cv2.imread(str(path),
                                                    cv2.IMREAD_GRAYSCALE))
 
-        self.repeat = None
+        # self.repeat = None
         for s in self.pictures:
             if repeat is not None and len(self.pictures[s]) != len(repeat):
                 raise RuntimeError('lenght of picture paths and repeat must'
