@@ -24,7 +24,7 @@ class DynamicRangeException(ImageProcessingException):
     """
 
     def __init__(self, msg, original_exception=None):
-        super(ImageProcessingException, self).__init__(msg)
+        super(DynamicRangeException, self).__init__(msg)
         self.original_exception = original_exception
 
 
