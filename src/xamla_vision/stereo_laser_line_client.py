@@ -36,6 +36,26 @@ class StereoLaserLineClient(object):
                  max_depth: float = 0.55,
                  axis: int = 1,
                  ransac_filter: bool=True):
+        """            
+        Parameters
+        ----------
+        stereo_calibration_file_path : str
+            Path to the camera calibration file
+        left_camera_client: GeniCamCaptureClient,
+            The left camera client
+        right_camera_client: GeniCamCaptureClient,
+            The right camera client
+        camera_with_io: str
+            The serial of the camera
+        io_port: int
+            The io port
+        max_depth: float
+            Defines the maximal distance a point found can have viewed from left camera 
+        axis: int
+            The axis of the laser 
+        ransac_filter: bool
+            Use ransac filter or not TODO: Does nothing here, since member variable never used!
+        """
 
         path = pathlib.Path(stereo_calibration_file_path)
 
