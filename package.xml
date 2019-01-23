@@ -2,7 +2,7 @@
 <package format="2">
   <name>xamla_vision</name>
   <version>0.0.1</version>
-  <description>client library to interact with xamla motion / rosvita</description>
+  <description>set of functions doing various vision tasks in python</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -25,8 +25,7 @@
   <!-- Author tags are optional, multiple are allowed, one per tag -->
   <!-- Authors do not have to be maintainers, but could be -->
   <!-- Example: -->
-  <author email="manuel.volk@xamla.com">Manuel Volk</author> -->
-  <author email="alexandre.stueben@xamla.com">Manuel Volk</author> -->
+  <author email="alexandre.stueben@xamla.com">Alexandre Stueben</author> -->
 
   <!-- The *depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->
