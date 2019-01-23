@@ -257,24 +257,37 @@ class StereoLaserLineClient(object):
                  exposure_times: Union[None, Tuple[int, int]]=None,
                  ransac_filter: bool=True):
 
-        """Get laser line points.
+        """
+        Get laser line points.
 
         This function makes a stereo image of a laser line and triangulates corresponding
         points. 
     
-        
-        When not exposure_times is given, 
+            
+        Parameters
+        ----------
+        left_cam_pose : Union[None, Pose]
+            When left_cam_pose is not None, the points are calculated in world view.
+            Else, they are relative to the origin of the left camera.
 
-        When left_cam_pose is given, the points are in world view.
-        Else, they are relative to the left camera.
+        exposure_times: Union[None, Tuple[int, int]]=None
+            When exposure_times is not None, the exposure is set to the values given
+            in the Tuple.
+            Else, they are calculated using exposure_time_search.
 
-        If ransac_filter is true, the points filtered using the ransac method to 
-        avoid points diverging too much in x-direction (from the view of the plane 
-        spanned by the two cameras).
-        This assumes that when projecting the laser line onto the plane orthoganally,
-        the resulting curve is a straight line in y-direction. 
+        ransac_filter: bool
+            Indicate if a ransac filter is used to filter out outlier.
+            If ransac_filter is True, the points are filtered using the ransac method 
+            to avoid points diverging too much in x-direction (from the view of the plane 
+            spanned by the two cameras).
+            This assumes that when projecting the laser line onto the plane orthoganally,
+            the resulting curve is a straight line in y-direction, so points diverging in
+            x-direction must be outlier. 
 
-        Returns the points as an np.ndarray. 
+        Returns
+        -------
+        np.ndarray
+            the point cloud
         """
 
         if exposure_times is not None:
