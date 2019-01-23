@@ -157,6 +157,12 @@ class StereoLaserLineClient(object):
         return result
 
     def exposure_time_search(self):
+        """ Searches exposure time.
+        
+        Make sure that no pixel is saturated by keeping the pixel with 
+        the highest intensity between 220 and 250.
+        """
+
         for k, v in self.cameras.items():
             if v['exposure_time'] is None:
                 v['exposure_time'] = 3000
@@ -250,6 +256,26 @@ class StereoLaserLineClient(object):
     def __call__(self, left_cam_pose: Union[None, Pose]=None,
                  exposure_times: Union[None, Tuple[int, int]]=None,
                  ransac_filter: bool=True):
+
+        """Get laser line points.
+
+        This function makes a stereo image of a laser line and triangulates corresponding
+        points. 
+    
+        
+        When not exposure_times is given, 
+
+        When left_cam_pose is given, the points are in world view.
+        Else, they are relative to the left camera.
+
+        If ransac_filter is true, the points filtered using the ransac method to 
+        avoid points diverging too much in x-direction (from the view of the plane 
+        spanned by the two cameras).
+        This assumes that when projecting the laser line onto the plane orthoganally,
+        the resulting curve is a straight line in y-direction. 
+
+        Returns the points as an np.ndarray. 
+        """
 
         if exposure_times is not None:
             self.cameras[self.left_camera_id]['exposure_time'] = exposure_times[0]
