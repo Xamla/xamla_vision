@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import pathlib
 from typing import Dict, List, Tuple, Union
 
@@ -28,14 +29,25 @@ class StereoLaserLineClientException(Exception):
 
 class StereoLaserLineClient(object):
 
+    """
+    Client to cast a laser line and reconstruct a point cloud from 
+    the stereo vision images 
+
+    Methods
+    -------
+    exposure_time_search
+        Search an exposure time to avoid over-/under-saturation of pixels
+    __call__
+        Project a laser line, do a stereo image and reconstruct the point cloud
+    """
+
     def __init__(self, stereo_calibration_file_path: str,
                  left_camera_client: GeniCamCaptureClient,
                  right_camera_client: GeniCamCaptureClient,
                  camera_with_io: str,
                  io_port: int,
                  max_depth: float = 0.55,
-                 axis: int = 1,
-                 ransac_filter: bool=True):
+                 axis: int = 1):
         """            
         Parameters
         ----------
@@ -53,8 +65,6 @@ class StereoLaserLineClient(object):
             Defines the maximal distance a point found can have viewed from left camera 
         axis: int
             The axis of the laser 
-        ransac_filter: bool
-            Use ransac filter or not TODO: Does nothing here, since member variable never used!
         """
 
         path = pathlib.Path(stereo_calibration_file_path)
@@ -115,7 +125,6 @@ class StereoLaserLineClient(object):
                                              SetIO)
 
         self.ransac = linear_model.RANSACRegressor(residual_threshold=0.005)
-        self.ransac_filter = ransac_filter
 
     def _from_xml(self, path: pathlib.Path):
         fs = cv2.FileStorage(str(path),
@@ -281,8 +290,7 @@ class StereoLaserLineClient(object):
         Get laser line points.
 
         This function makes a stereo image of a laser line and triangulates corresponding
-        points. 
-    
+        points.
             
         Parameters
         ----------
