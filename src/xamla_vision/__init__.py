@@ -10,3 +10,4 @@ from .crop_box_statistics_client import (CropBoxStatisticsProperties,
 
 from .stereo_laser_line_client import StereoLaserLineClient
 
+from .xamla_grid_calibrator import XamlaGridCalibrator

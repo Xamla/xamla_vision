@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+../.vscode/*
+!../.vscode/settings.json
+!../.vscode/tasks.json
+!../.vscode/launch.json
+!../.vscode/extensions.jso
+
 # Distribution / packaging
 .Python
 build/
@@ -93,6 +99,9 @@ venv.bak/
 # Spyder project settings
 .spyderproject
 .spyproject
+
+# vscode
+.vscode
 
 # Rope project settings
 .ropeproject
