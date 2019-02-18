@@ -22,8 +22,12 @@ class StereoLaserLineClientException(Exception):
     StereoLaserLineClient specific exception
     """
 
-    def __init__(self, msg, original_exception=None):
+    def __init__(self, msg,
+                 error_code, support=None,
+                 original_exception=None):
         super(StereoLaserLineClientException, self).__init__(msg)
+        self.error_code = error_code
+        self.support = support
         self.original_exception = original_exception
 
 
@@ -187,7 +191,7 @@ class StereoLaserLineClient(object):
 
     def exposure_time_search(self):
         """ Searches exposure time.
-        
+
         Make sure that no pixel is saturated by keeping the pixel with 
         the highest intensity between 220 and 250.
         """
@@ -222,7 +226,8 @@ class StereoLaserLineClient(object):
                 return {k: v['exposure_time'] for k, v in self.cameras.items()}
 
         raise StereoLaserLineClientException('no suitable exposure'
-                                             ' time could be found')
+                                             ' time could be found',
+                                             error_code=-1)
 
     def _undistort_points(self, point_dict):
         l = cv2.undistortPoints(np.array(point_dict[self.left_camera_id])[None, ...],
@@ -270,28 +275,33 @@ class StereoLaserLineClient(object):
     def _valid_check(self, left_exists: List[int], img_size: Tuple[int, int]):
         if len(left_exists) == 0:
             raise StereoLaserLineClientException('no valid laser'
-                                                 ' line points found')
+                                                 ' line points found',
+                                                 error_code=-2,
+                                                 support=len(left_exists))
         elif self.axis == 1 and len(left_exists) < img_size[0]/2:
             raise StereoLaserLineClientException('less valid points than half'
                                                  ' of image height {} of '
                                                  '{}'.format(len(left_exists),
-                                                             img_size[0]/2))
+                                                             img_size[0]/2),
+                                                 error_code=-3,
+                                                 support=len(left_exists))
         elif self.axis == 0 and len(left_exists) < img_size[1]/2:
             raise StereoLaserLineClientException('less valid points than half'
                                                  ' of image width {} of '
                                                  '{}'.format(len(left_exists),
-                                                             img_size[1]/2))
+                                                             img_size[1]/2),
+                                                 error_code=-3,
+                                                 support=len(left_exists))
 
     def __call__(self, left_cam_pose: Union[None, Pose]=None,
                  exposure_times: Union[None, Tuple[int, int]]=None,
                  ransac_filter: bool=True):
-
         """
         Get laser line points.
 
         This function makes a stereo image of a laser line and triangulates corresponding
         points.
-            
+
         Parameters
         ----------
         left_cam_pose : Union[None, Pose]
@@ -421,7 +431,8 @@ class StereoLaserLineClient(object):
         if np.any(points_3d[2, :] > self.max_depth):
             raise StereoLaserLineClientException('measured depth larger than '
                                                  'specified max depth {}'
-                                                 ''.format(self.max_depth))
+                                                 ''.format(self.max_depth),
+                                                 error_code=-4)
 
         if left_cam_pose is not None:
             m = left_cam_pose.transformation_matrix()
