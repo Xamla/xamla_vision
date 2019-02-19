@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<launch>
+  <node name="LeftArmStereoLaserLine" pkg="xamla_vision" type="stereo_laser_line_node.py" output="screen">
+        <param name="calibration_file_path" type="str" value="test_test/test_test" />
+  </node>
+</launch>
