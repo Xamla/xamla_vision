@@ -1,0 +1,9 @@
+uint32 left_cam_exposure_time
+uint32 right_cam_exposure_time
+string left_cam_frame_id
+-------------------------------
+bool success
+sensor_msgs/PointCloud point_cloud
+uint32[] line_idx
+int32 error_code
+string error_msg
