@@ -25,6 +25,7 @@ class StereoLaserLineNode(object):
                                             io_port=laser_io_port)
 
     def generate_point_cloud_callback(self, req: ScanRequest):
+        print('call scan service')
         resp = ScanResponse()
         resp.error_code = 0
         resp.error_msg = 'success'
@@ -47,7 +48,7 @@ class StereoLaserLineNode(object):
 
             return resp
 
-        for p in point_cloud:
+        for p in point_cloud.T:
             point = Point32()
             point.x = p[0]
             point.y = p[1]
@@ -61,5 +62,5 @@ class StereoLaserLineNode(object):
 
 if __name__ == "__main__":
     node = StereoLaserLineNode()
-    rospy.Service('scan', Scan, node.generate_point_cloud_callback)
+    rospy.Service('~scan', Scan, node.generate_point_cloud_callback)
     rospy.spin()
