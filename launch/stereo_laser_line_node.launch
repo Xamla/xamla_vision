@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <launch>
-  <node name="LeftArmStereoLaserLine" pkg="xamla_vision" type="stereo_laser_line_node.py" output="screen">
+  <node name="left_arm_stereo_laser_line" pkg="xamla_vision" type="stereo_laser_line_node.py" output="screen">
         <param name="calibration_file_path" type="str" value="/home/xamla/Rosvita.Control/projects/basf_launderometer/calibration/left_arm_cameras/stereo_cams_4103130811_4103189394.t7" />
         <param name="left_cam_serial" type="str" value="4103130811" />
         <param name="right_cam_serial" type="str" value="4103189394" />
         <param name="cam_with_laser_io" type="str" value="4103130811" />
+        <param name="laser_io_port" type="int" value="2" />
+  </node>
+  <node name="right_arm_stereo_laser_line" pkg="xamla_vision" type="stereo_laser_line_node.py" output="screen">
+        <param name="calibration_file_path" type="str" value="/home/xamla/Rosvita.Control/projects/basf_launderometer/calibration/right_arm_cameras/stereo_cams_4103217455_4103235743.t7" />
+        <param name="left_cam_serial" type="str" value="4103217455" />
+        <param name="right_cam_serial" type="str" value="4103235743" />
+        <param name="cam_with_laser_io" type="str" value="4103217455" />
         <param name="laser_io_port" type="int" value="2" />
   </node>
 </launch>
