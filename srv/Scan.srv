@@ -8,9 +8,12 @@ bool success
 sensor_msgs/PointCloud point_cloud
 # left camera image row indices of point cloud points
 uint32[] line_idx
+# number of found point cloud points
+uint32 support
 # error code 0 success
 # error code -2 no valid laser line points found
 # error code -3 less valid laser line points found than half of camera sensor height
 # error code -4 point clound points larger than max distance 0.5 meter
+# error code -10 other errors see error message
 int32 error_code
 string error_msg

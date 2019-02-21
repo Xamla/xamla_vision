@@ -27,12 +27,14 @@ class StereoLaserLineNode(object):
     def generate_point_cloud_callback(self, req: ScanRequest):
         print('call scan service')
         resp = ScanResponse()
+        resp.success = False
         resp.error_code = 0
         resp.error_msg = 'success'
         resp.point_cloud = PointCloud()
         resp.point_cloud.header.frame_id = req.left_cam_frame_id
         resp.point_cloud.header.stamp = rospy.Time.now()
         resp.line_idx = []
+        resp.support = 0
 
         try:
             point_cloud, line_idx = self.client(None,
@@ -41,12 +43,16 @@ class StereoLaserLineNode(object):
         except Exception as exc:
             if isinstance(exc, StereoLaserLineClientException):
                 resp.error_code = exc.error_code
+                if exc.error_code == -3:
+                    resp.support = exc.support
             else:
                 resp.error_code = -10
 
             resp.error_msg = str(exc)
 
             return resp
+
+        resp.success = True
 
         for p in point_cloud.T:
             point = Point32()
@@ -56,6 +62,7 @@ class StereoLaserLineNode(object):
             resp.point_cloud.points.append(point)
 
         resp.line_idx = line_idx
+        resp.support = len(line_idx)
 
         return resp
 
