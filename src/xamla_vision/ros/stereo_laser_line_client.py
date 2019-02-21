@@ -10,12 +10,12 @@ from geometry_msgs.msg import Point32
 def _point_cloud_to_numpy_array(point_cloud: PointCloud):
 
     number_of_points = len(point_cloud.points)
-    points = np.zeros((number_of_points, 3),
+    points = np.zeros((3, number_of_points),
                       dtype=float)
     for i, p in enumerate(point_cloud.points):
-        points[i, 0] = p.x
-        points[i, 1] = p.y
-        points[i, 2] = p.z
+        points[0, i] = p.x
+        points[1, i] = p.y
+        points[2, i] = p.z
 
     return points
 
@@ -45,7 +45,7 @@ class StereoLaserLineClient(object):
                  right_cam_exposure_time: int,
                  left_cam_frame_id: str):
         """
-        Request laser line scan 
+        Request laser line scan
 
         Parameters
         ----------
@@ -59,7 +59,7 @@ class StereoLaserLineClient(object):
         Result
         ------
         point_cloud: np.ndarray
-            point cloud as point in a shape np.array((number_of_points, 3) dtype=float)
+            point cloud as point in a shape np.array((3, number_of_points) dtype=float)
         line_idx: np.array
             left camera imager row indicies of point cloud points
         support: int

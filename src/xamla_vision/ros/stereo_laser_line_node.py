@@ -25,7 +25,7 @@ class StereoLaserLineNode(object):
                                             io_port=laser_io_port)
 
     def generate_point_cloud_callback(self, req: ScanRequest):
-        print('call scan service')
+        rospy.loginfo(b'call scan service')
         resp = ScanResponse()
         resp.success = False
         resp.error_code = 0
@@ -61,6 +61,7 @@ class StereoLaserLineNode(object):
             point.z = p[2]
             resp.point_cloud.points.append(point)
 
+        rospy.loginfo(b'%s number of points', len(resp.point_cloud.points))
         resp.line_idx = line_idx
         resp.support = len(line_idx)
 
