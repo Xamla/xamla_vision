@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 name = "xamla_vision"
 
+from .ros.stereo_laser_line_node import StereoLaserLineNode
+
 from .capture_client import (XimeaCaptureClient,
                              GeniCamCaptureClient,
                              SimulatedCaptureClient)

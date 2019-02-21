@@ -1,9 +1,16 @@
+# exposure time of left and right camera in microseconds
 uint32 left_cam_exposure_time
 uint32 right_cam_exposure_time
+# left cam coordinate system frame id
 string left_cam_frame_id
 -------------------------------
 bool success
 sensor_msgs/PointCloud point_cloud
+# left camera image row indices of point cloud points
 uint32[] line_idx
+# error code 0 success
+# error code -2 no valid laser line points found
+# error code -3 less valid laser line points found than half of camera sensor height
+# error code -4 point clound points larger than max distance 0.5 meter
 int32 error_code
 string error_msg
