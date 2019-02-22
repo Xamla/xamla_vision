@@ -2,7 +2,7 @@ import re
 import rospy
 import numpy as np
 from xamla_vision.srv import Scan, ScanRequest, ScanResponse
-from xamla_vision.stereo_laser_line_client import StereoLaserLineClientException
+from xamla_vision import StereoLaserLineClientException
 from sensor_msgs.msg import PointCloud
 from geometry_msgs.msg import Point32
 

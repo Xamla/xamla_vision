@@ -4,6 +4,8 @@ name = "xamla_vision"
 from .ros import (StereoLaserLineClient,
                   StereoLaserLineNode)
 
+from .stereo_laser_line_client import StereoLaserLineClientException
+
 from .capture_client import (XimeaCaptureClient,
                              GeniCamCaptureClient,
                              SimulatedCaptureClient)
