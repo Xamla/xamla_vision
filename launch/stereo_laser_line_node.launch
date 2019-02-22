@@ -12,6 +12,6 @@
         <param name="left_cam_serial" type="str" value="4103217455" />
         <param name="right_cam_serial" type="str" value="4103235743" />
         <param name="cam_with_laser_io" type="str" value="4103217455" />
-        <param name="laser_io_port" type="int" value="2" />
+        <param name="laser_io_port" type="int" value="3" />
   </node>
 </launch>

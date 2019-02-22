@@ -99,8 +99,7 @@ class StereoLaserLineClient(object):
                                         self.distortion_parameter_right,
                                         self.size,
                                         self.left2right_rotation,
-                                        self.left2right_translation,
-                                        alpha=1)
+                                        self.left2right_translation)
 
         self.left_camera_id = left_camera_client.serials[0]
         self.right_camera_id = right_camera_client.serials[0]
