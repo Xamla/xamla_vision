@@ -18,11 +18,18 @@ class StereoLaserLineNode(object):
         laser_io_port = rospy.get_param('~laser_io_port')
         left_cam_client = GeniCamCaptureClient(serials=[left_cam_serial])
         right_cam_client = GeniCamCaptureClient(serials=[right_cam_serial])
+
+        try:
+            max_depth = rospy.get_param('~max_depth')
+        except KeyError:
+            max_depth = 0.5
+
         self.client = StereoLaserLineClient(calibration_file_path,
                                             left_cam_client,
                                             right_cam_client,
                                             camera_with_io=cam_with_laser_io,
-                                            io_port=laser_io_port)
+                                            io_port=laser_io_port,
+                                            max_depth=max_depth)
 
     def generate_point_cloud_callback(self, req: ScanRequest):
         rospy.loginfo(b'call scan service')
