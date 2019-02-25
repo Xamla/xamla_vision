@@ -20,7 +20,7 @@ class StereoLaserLineNode(object):
         right_cam_client = GeniCamCaptureClient(serials=[right_cam_serial])
 
         try:
-            max_depth = rospy.get_param('~max_depth')
+            max_depth = float(rospy.get_param('~max_depth'))
         except KeyError:
             max_depth = 0.5
 
