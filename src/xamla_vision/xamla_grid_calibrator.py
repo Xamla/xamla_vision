@@ -86,7 +86,7 @@ class XamlaGridCalibrator(object):
                 screw_center_on_table = screw_center_on_table.rotate(
                     Quaternion([0, 1, 1, 0]))
 
-                display_name = 'GridPoint{}_{}{}'.format(
+                display_name = 'GridPoint_{}_{}{}'.format(
                     '%03d' % counter, x_coordinate, y_coordinate)
                 self.addOrUpdatePose(
                     display_name, self.world_view_folder, screw_center_on_table)
