@@ -76,7 +76,7 @@ class XamlaGridCalibrator(object):
                     pickle.dump(current_pose, f)
 
                 camPoseFinal, circlesGridPointsLeft, circlesGridPointsRight, pointsInCamCoords = self.pattern_localizer.calcCamPoseViaPlaneFit(
-                    image_left, image_right, "left", True)
+                    image_left, image_right, "left", False, True)
                 camera_pose = current_pose * self.hand_eye
                 pattern_pose = camera_pose * camPoseFinal
                 #screw_center_on_table = Pose(pattern_pose.translation + self.offset_pattern_screw_on_table.translation, pattern_pose.rotation)
