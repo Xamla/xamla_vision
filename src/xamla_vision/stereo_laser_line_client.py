@@ -277,20 +277,20 @@ class StereoLaserLineClient(object):
                                                  ' line points found',
                                                  error_code=-2,
                                                  support=len(left_exists))
-        elif self.axis == 1 and len(left_exists) < img_size[0]/2:
-            raise StereoLaserLineClientException('less valid points than half'
-                                                 ' of image height {} of '
-                                                 '{}'.format(len(left_exists),
-                                                             img_size[0]/2),
-                                                 error_code=-3,
-                                                 support=len(left_exists))
-        elif self.axis == 0 and len(left_exists) < img_size[1]/2:
-            raise StereoLaserLineClientException('less valid points than half'
-                                                 ' of image width {} of '
-                                                 '{}'.format(len(left_exists),
-                                                             img_size[1]/2),
-                                                 error_code=-3,
-                                                 support=len(left_exists))
+        # elif self.axis == 1 and len(left_exists) < img_size[0]/2:
+        #     raise StereoLaserLineClientException('less valid points than half'
+        #                                          ' of image height {} of '
+        #                                          '{}'.format(len(left_exists),
+        #                                                      img_size[0]/2),
+        #                                          error_code=-3,
+        #                                          support=len(left_exists))
+        # elif self.axis == 0 and len(left_exists) < img_size[1]/2:
+        #     raise StereoLaserLineClientException('less valid points than half'
+        #                                          ' of image width {} of '
+        #                                          '{}'.format(len(left_exists),
+        #                                                      img_size[1]/2),
+        #                                          error_code=-3,
+        #                                          support=len(left_exists))
 
     def __call__(self, left_cam_pose: Union[None, Pose]=None,
                  exposure_times: Union[None, Tuple[int, int]]=None,
