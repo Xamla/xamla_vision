@@ -4,15 +4,15 @@ import pathlib
 from typing import Dict, List, Tuple, Union
 
 import cv2
+import numpy as np
 import rospy
+import torchfile
 from xamla_motion.data_types import Pose
 from xamla_motion.utility import ROSNodeSteward
+
+from camera_aravis.srv import SetIO, SetIORequest
 from sklearn import linear_model
 from sklearn.preprocessing import PolynomialFeatures
-
-import numpy as np
-import torchfile
-from camera_aravis.srv import SetIO, SetIORequest
 
 from .capture_client import GeniCamCaptureClient
 
@@ -34,8 +34,9 @@ class StereoLaserLineClientException(Exception):
 class StereoLaserLineClient(object):
 
     """
-    Client to cast a laser line and reconstruct a point cloud from 
-    the stereo vision images 
+    Client to project a laser line into the scene and
+    reconstruct a point cloud of that line from
+    the stereo images
 
     Methods
     -------
@@ -52,7 +53,7 @@ class StereoLaserLineClient(object):
                  io_port: int,
                  max_depth: float = 0.55,
                  axis: int = 1):
-        """            
+        """
         Parameters
         ----------
         stereo_calibration_file_path : str
@@ -62,13 +63,18 @@ class StereoLaserLineClient(object):
         right_camera_client: GeniCamCaptureClient,
             The right camera client
         camera_with_io: str
-            The serial of the camera
+            The serial of the camera with which the
+            laser is controlled
         io_port: int
-            The io port
-        max_depth: float
-            Defines the maximal distance a point found can have viewed from left camera 
-        axis: int
-            The axis of the laser 
+            IO port of the camera which enables and
+            disables the laser
+        max_depth: float (default 0.55)
+            Defines the maximal distance in z-axis
+            between left camera image plane and 3d point
+            which is allowed.
+        axis: int (default 1)
+            The axis of the laser in image coordinates:
+            1 for columns (y-axis), 0 for rows (x-axis)
         """
 
         path = pathlib.Path(stereo_calibration_file_path)
@@ -191,7 +197,7 @@ class StereoLaserLineClient(object):
     def exposure_time_search(self):
         """ Searches exposure time.
 
-        Make sure that no pixel is saturated by keeping the pixel with 
+        Make sure that no pixel is saturated by keeping the pixel with
         the highest intensity between 220 and 250.
         """
 
@@ -294,37 +300,40 @@ class StereoLaserLineClient(object):
 
     def __call__(self, left_cam_pose: Union[None, Pose]=None,
                  exposure_times: Union[None, Tuple[int, int]]=None,
-                 ransac_filter: bool=True):
+                 ransac_filter: bool=True, debug_mode: bool=False):
         """
         Get laser line points.
 
-        This function makes a stereo image of a laser line and triangulates corresponding
-        points.
+        This captures two stereo image pairs with and without laser line and
+        triangulates laser line 3d points from it.
 
         Parameters
         ----------
         left_cam_pose : Union[None, Pose]
             When left_cam_pose is not None, the points are calculated in world view.
             Else, they are relative to the origin of the left camera.
-
         exposure_times: Union[None, Tuple[int, int]]=None
             When exposure_times is not None, the exposure is set to the values given
             in the Tuple.
             Else, they are calculated using exposure_time_search.
-
-        ransac_filter: bool
+        ransac_filter: bool (default True)
             Indicate if a ransac filter is used to filter out outlier.
-            If ransac_filter is True, the points are filtered using the ransac method 
-            to avoid points diverging too much in x-direction (from the view of the plane 
+            If ransac_filter is True, the points are filtered using the ransac method
+            to avoid points diverging too much in x-direction (from the view of the plane
             spanned by the two cameras).
             This assumes that when projecting the laser line onto the plane orthoganally,
             the resulting curve is a straight line in y-direction, so points diverging in
-            x-direction must be outlier. 
+            x-direction must be outliers.
+        debug_mode: bool (default False)
+            if True show captured diff images of left and right camera and
+            laser line 3d points
 
         Returns
         -------
         np.ndarray
             the point cloud
+        np.ndarray
+            image row or colum in which the 3d point was found (left camera image)
         """
 
         if exposure_times is not None:
@@ -339,6 +348,7 @@ class StereoLaserLineClient(object):
 
         r = self._capture(with_laser=True)
 
+        diff_images = {}
         laser_line_points = {k: [] for k in self.cameras.keys()}
         for serial, image in r.items():
             p_img = p_r[serial]
@@ -350,9 +360,8 @@ class StereoLaserLineClient(object):
 
             diff_img = diff_img.astype(np.uint8)
 
-            # cv2.imshow(serial, diff_img)
-            # cv2.waitKey(5000)
-            # cv2.destroyAllWindows()
+            if debug_mode is True:
+                diff_images[serial] = diff_img
 
             idx = np.argmax(diff_img, axis=self.axis)
             if self.axis == 0:
@@ -408,7 +417,7 @@ class StereoLaserLineClient(object):
         features = PolynomialFeatures(degree=5)
         X_feat = features.fit_transform(X)
 
-        if ransac_filter == True:
+        if ransac_filter is True:
             if self.axis == 1:
                 self.ransac.fit(X_feat,
                                 points_3d[0, :])
@@ -433,9 +442,56 @@ class StereoLaserLineClient(object):
                                                  ''.format(self.max_depth),
                                                  error_code=-4)
 
+        result_points_3d = None
+
         if left_cam_pose is not None:
             m = left_cam_pose.transformation_matrix()
-            return (np.matmul(m, points_3d)[:3, :],
-                    left_exists)
+            result_points_3d = np.matmul(m, points_3d)[:3, :]
+        else:
+            result_points_3d = points_3d[:3, :]
 
-        return points_3d[:3, :], left_exists
+        if debug_mode is True:
+            import matplotlib.pyplot as plt
+            from mpl_toolkits.mplot3d import Axes3D
+
+            fig_diff_images = plt.figure()
+            ax = fig_diff_images.add_subplot(211)
+            ax.imshow(
+                diff_images[self.left_camera_id],
+                cmap='gray', vmin=0, vmax=255
+            )
+            ax.set_title(self.left_camera_id)
+            ax = fig_diff_images.add_subplot(212)
+            ax.imshow(
+                diff_images[self.right_camera_id],
+                cmap='gray', vmin=0, vmax=255
+            )
+            ax.set_title(self.right_camera_id)
+
+            fig_3d_points = plt.figure()
+            ax = fig_3d_points.add_subplot(211, projection='3d')
+
+            ax.scatter(
+                result_points_3d[0, :],
+                result_points_3d[1, :],
+                result_points_3d[2, :],
+                c='r', marker='o'
+            )
+
+            ax.set_xlabel('X Label')
+            ax.set_ylabel('Y Label')
+            ax.set_zlabel('Z Label')
+
+            ax = fig_3d_points.add_subplot(212)
+            ax.plot(
+                result_points_3d[1, :],
+                result_points_3d[2, :],
+                'ro'
+            )
+
+            ax.set_xlabel('Y Label')
+            ax.set_ylabel('Z Label')
+            ax.set_title('3d laser line points')
+            plt.show()
+
+        return result_points_3d, left_exists

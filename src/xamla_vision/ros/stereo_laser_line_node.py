@@ -46,7 +46,8 @@ class StereoLaserLineNode(object):
         try:
             point_cloud, line_idx = self.client(None,
                                                 [req.left_cam_exposure_time,
-                                                 req.right_cam_exposure_time])
+                                                 req.right_cam_exposure_time],
+                                                debug_mode=req.debug_mode)
         except Exception as exc:
             if isinstance(exc, StereoLaserLineClientException):
                 resp.error_code = exc.error_code

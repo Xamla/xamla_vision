@@ -3,6 +3,7 @@ uint32 left_cam_exposure_time
 uint32 right_cam_exposure_time
 # left cam coordinate system frame id
 string left_cam_frame_id
+bool debug_mode
 -------------------------------
 bool success
 sensor_msgs/PointCloud point_cloud
